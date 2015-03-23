@@ -42,7 +42,7 @@ public class AdapterActivity extends ActionBarActivity {
                 "http://scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/s306x306/e15/10560916_257110941153605_1295607370_n.jpg"
         };
 
-        CustomAdapter adapter = new CustomAdapter(this, R.layout.textview, mImageUri);
+        CustomAdapter adapter = new CustomAdapter(this, R.layout.imageview, mImageUri);
 
         ListView listView = (ListView) findViewById(R.id.listViewTest);
         listView.setAdapter(adapter);

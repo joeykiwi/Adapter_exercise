@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,8 @@ public class CustomAdapter extends ArrayAdapter<String> {
     int mResLayoutId;
     ArrayList<String> mImageUri;
     TextView textView;
-    ImageView imageView;
+
+
 
     public CustomAdapter(Context context, int resource, ArrayList<String> Uris) {
         super(context,resource,Uris);
@@ -40,13 +42,16 @@ public class CustomAdapter extends ArrayAdapter<String> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
+        Log.d("Joey", "position " + position);
+        View rowView;
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(mResLayoutId, parent, false);
-        imageView = (ImageView) rowView.findViewById(R.id.listImageView);
-        URL mUrl;
+        rowView = inflater.inflate(mResLayoutId, parent, false);
+        ImageView imageView = (ImageView) rowView.findViewById(R.id.listImageView);
+
+        URL Url;
         try {
-            mUrl = new URL(mImageUri.get(position));
-            new imageAsyncTask().execute(mUrl);
+            Url = new URL(mImageUri.get(position));
+            new imageAsyncTask(Url, imageView).execute();
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -64,13 +69,21 @@ public class CustomAdapter extends ArrayAdapter<String> {
         return rowView;
     }
 
-    public class imageAsyncTask extends AsyncTask<URL, Void, Void> {
+    public class imageAsyncTask extends AsyncTask<Void, Void, Void> {
+        private Bitmap mBitmap;
+        private URL mUrl;
+        private ImageView mImageView;
+        public imageAsyncTask(URL url, ImageView image) {
+            mUrl = url;
+            mImageView = image;
+        }
+
 
         @Override
-        protected Void doInBackground(URL... params) {
+        protected Void doInBackground(Void... params) {
             try {
-                Bitmap bitmap = BitmapFactory.decodeStream(params[0].openConnection().getInputStream());
-                imageView.setImageBitmap(bitmap);
+                mBitmap = BitmapFactory.decodeStream(mUrl.openConnection().getInputStream());
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -79,6 +92,7 @@ public class CustomAdapter extends ArrayAdapter<String> {
 
         @Override
         protected void onPostExecute(Void aVoid) {
+            mImageView.setImageBitmap(mBitmap);
         }
     }
 }
